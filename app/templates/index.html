@@ -13,7 +13,7 @@
     <header class="app-header">
         <div class="header-container">
             <div class="brand">
-                <i class="fa-solid fa-layer-group brand-icon"></i>
+                <i class="fa-solid me-2 fa-layer-group brand-icon"></i>
                 <span class="brand-title">Geomati<span class="brand-accent">X</span></span>
             </div>
             <div class="header-author">
@@ -28,28 +28,28 @@
         <!-- HERO SECTION -->
         <section class="hero-card">
             <div class="hero-content">
-                <h1>Modern Raster Data Analyzer & Normalizer</h1>
-                <p>Import JPG or TIFF files, extract interactive grid values, and export fully normalized GeoTIFF files.</p>
+                <h1>Next-Gen Geospatial Raster Processing</h1>
+                <p>Enterprise-grade remote sensing analytics, grid sampling, Min-Max feature normalization, and geospatial matrix exporter.</p>
             </div>
         </section>
 
         <!-- UPLOAD SECTION -->
         <section class="panel-card">
             <div class="panel-header">
-                <h2><i class="fa-solid fa-cloud-arrow-up"></i> Image / GeoTIFF Import Stage</h2>
+                <h2><i class="fa-solid fa-cloud-arrow-up"></i> GeoTIFF Import Stage</h2>
             </div>
             <div class="upload-dropzone" id="dropzone">
-                <input type="file" id="rasterInput" accept=".tif, .tiff, .jpg, .jpeg" hidden>
-                <i class="fa-solid fa-file-image upload-icon"></i>
-                <h3>Drag & Drop File Here</h3>
-                <p>Supports Image files (.jpg, .jpeg) and GeoTIFF (.tif, .tiff) up to 100MB</p>
+                <input type="file" id="rasterInput" accept=".tif, .tiff" hidden>
+                <i class="fa-solid fa-file-spectral upload-icon"></i>
+                <h3>Drag & Drop GeoTIFF File Here</h3>
+                <p>Supports single-band & multi-band imagery up to 100MB (.tif, .tiff)</p>
                 <button class="btn btn-primary" onclick="document.getElementById('rasterInput').click()">
                     <i class="fa-solid fa-folder-open"></i> Browse Files
                 </button>
             </div>
             <div id="uploadSpinner" class="spinner-container hidden">
                 <div class="spinner"></div>
-                <p>Processing & Converting Image Data...</p>
+                <p>Parsing Raster Metadata & Sampling Layers...</p>
             </div>
         </section>
 
@@ -63,29 +63,28 @@
                 </div>
                 <div class="telemetry-grid">
                     <div class="telemetry-box"><span class="label">Filename</span><span id="metaName" class="value">-</span></div>
-                    <div class="telemetry-box"><span class="label">Input Type</span><span id="metaFileType" class="value">-</span></div>
                     <div class="telemetry-box"><span class="label">Dimensions</span><span id="metaDim" class="value">-</span></div>
                     <div class="telemetry-box"><span class="label">Total Bands</span><span id="metaBands" class="value">-</span></div>
-                    <div class="telemetry-box"><span class="label">CRS</span><span id="metaCRS" class="value">-</span></div>
+                    <div class="telemetry-box"><span class="label">Coordinate System</span><span id="metaCRS" class="value">-</span></div>
                     <div class="telemetry-box"><span class="label">Data Type</span><span id="metaType" class="value">-</span></div>
                 </div>
 
                 <div class="control-strip">
                     <div class="control-group">
-                        <label><i class="fa-solid fa-layer-group"></i> Band Selection:</label>
+                        <label><i class="fa-solid fa-layer-group"></i> Band Layer:</label>
                         <select id="bandSelector" class="form-control" onchange="window.appEngine.handleBandChange()"></select>
                     </div>
 
                     <div class="control-group">
-                        <label><i class="fa-solid fa-table-cells"></i> Grid Size:</label>
+                        <label><i class="fa-solid fa-table-cells"></i> Grid Dimensions:</label>
                         <input type="number" id="gridRows" class="form-control-sm" value="15" min="5" max="60"> R × 
                         <input type="number" id="gridCols" class="form-control-sm" value="15" min="5" max="60"> C
-                        <button class="btn btn-secondary" onclick="window.appEngine.buildGrid()">Build Grid</button>
+                        <button class="btn btn-secondary" onclick="window.appEngine.buildGrid()">Re-Sample Grid</button>
                     </div>
 
                     <div class="control-group ms-auto">
                         <button class="btn btn-accent" onclick="window.appEngine.normalizeFullRaster()">
-                            <i class="fa-solid fa-bolt"></i> Normalize Raster
+                            <i class="fa-solid fa-bolt"></i> Execute Full Normalization
                         </button>
                     </div>
                 </div>
@@ -94,9 +93,9 @@
             <!-- RAW GRID DISPLAY -->
             <section class="panel-card col-span-12">
                 <div class="panel-header justify-between">
-                    <h2><i class="fa-solid fa-table"></i> Raw Pixel Value Grid</h2>
+                    <h2><i class="fa-solid fa-table"></i> Sampled Raw Pixel Matrix</h2>
                     <div class="toggle-group">
-                        <label><input type="checkbox" id="toggleRawLabels" checked onchange="window.appEngine.renderGridUI()"> Labels</label>
+                        <label><input type="checkbox" id="toggleRawLabels" checked onchange="window.appEngine.renderGridUI()"> Row/Col Headers</label>
                         <label class="ms-3"><input type="checkbox" id="toggleRawValues" checked onchange="window.appEngine.renderGridUI()"> Values</label>
                         <button class="btn btn-outline-sm ms-3" onclick="window.appEngine.exportMatrix('raw', 'csv')"><i class="fa-solid fa-file-csv"></i> CSV</button>
                         <button class="btn btn-outline-sm" onclick="window.appEngine.exportMatrix('raw', 'png')"><i class="fa-solid fa-file-image"></i> PNG</button>
@@ -105,21 +104,10 @@
                 <div class="matrix-scroll-wrapper" id="rawGridContainer"></div>
             </section>
 
-            <!-- NORMALIZATION FORMULA PANEL -->
-            <section class="panel-card col-span-12">
-                <div class="panel-header">
-                    <h2><i class="fa-solid fa-square-root-variable"></i> Min-Max Normalization Formula</h2>
-                </div>
-                <div class="formula-box">
-                    <p class="formula-text">x' = (x - x<sub>min</sub>) / (x<sub>max</sub> - x<sub>min</sub>)</p>
-                    <p class="formula-sub">Rescales pixel values into range [0, 1] while preserving relative distribution.</p>
-                </div>
-            </section>
-
-            <!-- NORMALIZED GRID SECTION -->
+            <!-- NORMALIZED SECTION -->
             <section id="normSection" class="panel-card col-span-12 hidden">
                 <div class="panel-header justify-between">
-                    <h2><i class="fa-solid fa-chart-simple"></i> Normalized Raster Grid</h2>
+                    <h2><i class="fa-solid fa-chart-simple"></i> Normalized Raster Heatmap Matrix</h2>
                     <div class="toggle-group">
                         <label><i class="fa-solid fa-palette"></i> Palette:</label>
                         <select id="paletteSelect" class="form-control-sm" onchange="window.appEngine.renderGridUI()">
@@ -137,8 +125,8 @@
 
                 <div class="download-banner">
                     <div>
-                        <h3>Raster Normalization Complete</h3>
-                        <p>Output converted and saved as Float32 Normalized GeoTIFF file.</p>
+                        <h3>Geospatial Normalization Complete</h3>
+                        <p>All bands normalized independently [0,1]. Projection CRS and Affine parameters preserved.</p>
                     </div>
                     <a id="btnDownloadGeoTIFF" href="#" class="btn btn-success btn-lg">
                         <i class="fa-solid fa-download"></i> Download Normalized GeoTIFF
@@ -151,7 +139,7 @@
 
     <!-- FOOTER -->
     <footer class="app-footer">
-        <p>&copy; 2026 GeomatiX Engine. Developed by <strong>Asiful Islam Taif</strong></p>
+        <p>&copy; 2026 GeomatiX Engine. Designed and Developed by <strong>Asiful Islam Taif</strong> for Spatial Data Infrastructure Analysis.</p>
     </footer>
 
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
